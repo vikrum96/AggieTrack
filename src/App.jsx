@@ -8,11 +8,20 @@ function App() {
 
   return (
     <>
-      <div>
-        <h1>Aggie Track</h1>
-        <div>Favorites</div>
-        <button>Dark Mode</button>
+         <header className="flex items-center justify-between p-4 font-sans">
+      
+     
+      <div className="pl-10 text-4xl">
+        <h1 className="text-[#500000] font-[750]">Aggie Track</h1>
       </div>
+
+     
+      <div className="pr-5 flex items-center space-x-8">
+        <a href="#">Favorites</a>
+        <button className="bg-black hover:bg-gray-300 text-white rounded-md p-1 px-4">Dark Mode</button>
+      </div>
+
+    </header>
 
       <div />
 
