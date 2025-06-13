@@ -9,7 +9,7 @@ const CourseSearch = () => {
     // Rest of the logic will go here
   }
 
-  return (
+  return (  
     <div className="flex justify-center items-start mt-10 font-sans">
       {/* Course Major */}
       <div className="flex flex-col items-start mr-25">
