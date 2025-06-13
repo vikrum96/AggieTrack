@@ -20,7 +20,7 @@ function App() {
       <CourseSearch />
       
       {/* Graph stuff */}
-      <div className="flex flex-col min-h-screen bg-gray-50 text-gray-800">
+      <div className="flex flex-col min-h-screen bg-white text-gray-800">
         <footer className="w-1/2 ml-auto bg-white border-t border-gray-200 p-6 mt-20">
           <h2 className="text-xl font-semibold mb-4">Graph</h2>
           <div className="w-full h-72">
