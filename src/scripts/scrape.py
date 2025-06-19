@@ -1,7 +1,5 @@
 import pymupdf
 import json
-from itertools import islice
-
 
 # Creates an output.txt file with the contents of the grade distributions
 doc = pymupdf.open("src/pdf/grd20251EN.pdf") # open a document
@@ -38,19 +36,28 @@ seen_courses = {}
 line_buffer = []
 curr_entry = None
 skip = 0  # Number of lines to skip if we're in a COURSE TOTAL block
+in_page_header = False
 
 with open("src/scripts/output.txt", "r", encoding="utf-8") as f:
-    lines = islice(f, start_line-1, None)
-
-    for line in lines:
+    for line in f:
         line = line.strip()
 
-        if skip > 0:
-            skip -= 1
+        # Detect SECTION and start skipping headers
+        if "SECTION" in line:
+            in_page_header = True
             continue
+
+        if in_page_header:
+            if line == "Undergraduate":
+                in_page_header = False  # Done skipping page header
+            continue  # Still skipping header
 
         if line == "COURSE TOTAL:":
             skip = 14
+            continue
+
+        if skip > 0:
+            skip -= 1
             continue
 
         # Check course (e.g. AERO-200-501)
