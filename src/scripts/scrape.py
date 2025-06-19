@@ -6,6 +6,7 @@ from itertools import islice
 # Creates an output.txt file with the contents of the grade distributions
 doc = pymupdf.open("src/pdf/grd20251EN.pdf") # open a document
 
+# i = 0
 # This does one page with the break statement
 with open("src/scripts/output.txt", "wb") as out: # create a text output
     for page in doc: # iterate the document pages
@@ -13,10 +14,9 @@ with open("src/scripts/output.txt", "wb") as out: # create a text output
         out.write(text) # write text of page
         out.write(bytes((12,))) # write page delimiter (form feed 0x0C)
         break
-    # break
-    # i += 1
-    # if i == 2:
-    #     break
+        # i += 1
+        # if i == 2:
+        #     break
 
 
 yr = ""
