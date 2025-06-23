@@ -4,12 +4,24 @@ const CourseSearch = () => {
   const [major, setMajor] = useState("");
   const [number, setNumber] = useState("");
 
-  const handleSearch = () => {
+  const handleSearch = async (courseQuery ='', numQuery = '') => {
     console.log("Searching for", major, number);
     // Rest of the logic will go here
+    const param = new URLSearchParams();
+
+    if (courseQuery) param.append('name', courseQuery)
+
+    if (numQuery) param.append('course', numQuery)
+
+      
+    const res = await fetch(`http://localhost:5000/api/grades?${param}`);
+    const data = await res.json();
+  console.log(data);
   }
 
-  return (
+
+
+  return (  
     <div className="flex justify-center items-start mt-10 font-sans">
       {/* Course Major */}
       <div className="flex flex-col items-start mr-25">
@@ -45,5 +57,4 @@ const CourseSearch = () => {
 }
 
 export default CourseSearch;
-
 
