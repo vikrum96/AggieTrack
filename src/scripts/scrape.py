@@ -1,56 +1,49 @@
 import pymupdf
 import json
 
-# Creates an output.txt file with the contents of the grade distributions
-doc = pymupdf.open("src/pdf/grd20251EN.pdf") # open a document
+# Extract PDF text to output.txt
+doc = pymupdf.open("src/pdf/grdSPR2025.pdf")
 
-# i = 0
-# This does one page with the break statement
-with open("src/scripts/output.txt", "wb") as out: # create a text output
-    for page in doc: # iterate the document pages
-        text = page.get_text().encode("utf8") # get plain text (is in UTF-8)
-        out.write(text) # write text of page
-        out.write(bytes((12,))) # write page delimiter (form feed 0x0C)
-        break
-        # i += 1
-        # if i == 2:
-        #     break
+with open("src/scripts/output.txt", "wb") as out:
+    for page in doc:
+        text = page.get_text().encode("utf8")
+        out.write(text)
+        out.write(bytes((12,)))  # Form feed (page delimiter)
 
-
-yr = ""
-# Getting the year
+# Get year/term from header
 with open("src/scripts/output.txt", "r", encoding="utf-8") as f:
     for i, line in enumerate(f):
-        if i == 2:  # 3rd line (0-based index)
+        if i == 2:
             items = line.strip().split()
-            # Assuming format: "GRADE DISTRIBUTION REPORT FOR SPRING 2025"
-            term = items[-2][:3].upper()  # SPR
-            curr_year = items[-1]             # 2025
+            term = items[-2][:3].upper()  # e.g., SPR
+            curr_year = items[-1]         # e.g., 2025
             yr = f"{curr_year}-{term}"
             break
 
-# Rest of the entries
-data = []
-start_line = 39
-seen_courses = {}
-line_buffer = []
-curr_entry = None
-skip = 0  # Number of lines to skip if we're in a COURSE TOTAL block
-in_page_header = False
-
+# Parse all pages 
 with open("src/scripts/output.txt", "r", encoding="utf-8") as f:
-    for line in f:
+    full_text = f.read()
+
+pages = full_text.split("\f")  # Split by page
+
+data = []
+seen_courses = {}
+curr_entry = None
+line_buffer = []
+
+for page in pages:
+    lines = page.strip().splitlines()
+    content_lines = lines[38:]  # Skip header
+
+    # Skip pages without any course sections
+    has_course_sections = any("-" in line and len(line.split("-")) == 3 for line in content_lines)
+    if not has_course_sections:
+        continue  # Skip summary-only page
+
+    skip = 0
+
+    for line in content_lines:
         line = line.strip()
-
-        # Detect SECTION and start skipping headers
-        if "SECTION" in line:
-            in_page_header = True
-            continue
-
-        if in_page_header:
-            if line == "Undergraduate":
-                in_page_header = False  # Done skipping page header
-            continue  # Still skipping header
 
         if line == "COURSE TOTAL:":
             skip = 14
@@ -60,7 +53,6 @@ with open("src/scripts/output.txt", "r", encoding="utf-8") as f:
             skip -= 1
             continue
 
-        # Check course (e.g. AERO-200-501)
         if "-" in line and len(line.split("-")) == 3:
             dept, course, section = line.split("-")
             course_key = f"{dept}-{course}"
@@ -84,36 +76,59 @@ with open("src/scripts/output.txt", "r", encoding="utf-8") as f:
                 seen_courses[course_key] = curr_entry
             else:
                 curr_entry = seen_courses[course_key]
-            
-            # Always append a new section
+
             curr_entry["section_num"].append(section)
-            line_buffer = []
+            line_buffer = []  # Reset when new section starts
 
         else:
-            # Collect 14 lines of grade/instructor data
             if curr_entry is not None:
                 line_buffer.append(line)
-
-                if len(line_buffer) == 14:
+                if len(line_buffer) >= 14:
                     curr_entry["A"].append(line_buffer[0])
                     curr_entry["B"].append(line_buffer[2])
                     curr_entry["C"].append(line_buffer[4])
                     curr_entry["D"].append(line_buffer[6])
                     curr_entry["F"].append(line_buffer[8])
-                    curr_entry["gpa"].append(float(line_buffer[11]))
-                    # try:
-                    #     curr_entry["gpa"].append(float(line_buffer[11]))
-                    # except ValueError:
-                    #     curr_entry["gpa"].append(None)
-                    curr_entry["ISUQX"].append(line_buffer[12].split()[:5])
-                    curr_entry["instructor"].append(line_buffer[13])
-                    line_buffer = []
 
+                    # Dynamic GPA detection
+                    gpa = None
+                    for i in range(10, 14):
+                        try:
+                            gpa_candidate = float(line_buffer[i])
+                            if 0.0 <= gpa_candidate <= 4.0:
+                                gpa = gpa_candidate
+                                break
+                        except:
+                            continue
+                    curr_entry["gpa"].append(gpa)
 
-# print(data)
+                    # ISUQX detection
+                    isuqx_found = False
+                    for i in range(11, 14):
+                        parts = line_buffer[i].split()
+                        if len(parts) >= 5 and all(part.isdigit() for part in parts[:5]):
+                            curr_entry["ISUQX"].append(parts[:5])
+                            isuqx_found = True
+                            break
+                    if not isuqx_found:
+                        curr_entry["ISUQX"].append(["0", "0", "0", "0", "0"])
 
-# Creates JSON file
+                    # Instructor detection with exclusions
+                    instructor = None
+                    exclusion_keywords = ["COURSE TOTAL:", "DEPARTMENT TOTAL:"]
+                    for i in range(len(line_buffer)-1, -1, -1):
+                        line = line_buffer[i].strip()
+                        if any(c.isalpha() for c in line) and line not in exclusion_keywords:
+                            instructor = line
+                            break
+
+                    if instructor:
+                        curr_entry["instructor"].append(instructor)
+                    else:
+                        curr_entry["instructor"].append("Unknown")
+
+                    line_buffer = []  # Reset after section processed
+
+# Write to JSON
 with open("profiles.json", "w") as f:
     json.dump(data, f, indent=4)
-
-out.close()

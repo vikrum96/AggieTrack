@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const CourseSearch = () => {
+const CourseSearch = ({ setSearchResults }) => {
   const [major, setMajor] = useState("");
   const [number, setNumber] = useState("");
 
@@ -9,16 +9,21 @@ const CourseSearch = () => {
     // Rest of the logic will go here
     const param = new URLSearchParams();
 
-    if (courseQuery) param.append('name', courseQuery)
+    if (courseQuery) param.append('dept_name', courseQuery)
 
-    if (numQuery) param.append('course', numQuery)
+    if (numQuery) param.append('course_num', numQuery)
 
       
     const res = await fetch(`http://localhost:5000/api/grades?${param}`);
     const data = await res.json();
-  console.log(data);
+    
+    console.log(data);
+    setSearchResults(data);
   }
 
+  const search = () => {
+    handleSearch(major, number);
+  }
 
 
   return (  
@@ -48,7 +53,7 @@ const CourseSearch = () => {
       {/* Search Button */}
       <button
         className="mt-7 px-4 py-2 bg-black text-white font-bold rounded-lg cursor-pointer hover:opacity-80 active:opacity-50"
-        onClick={handleSearch}
+        onClick={search}
       >
         Search
       </button>
