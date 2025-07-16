@@ -5,3 +5,5 @@ Flask-PyMongo
 pymongo
 
 Flask-cors
+
+python-dotenv

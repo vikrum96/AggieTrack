@@ -4,11 +4,18 @@ from pymongo import MongoClient
 from bson import ObjectId
 import json
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+MONGO_URI = os.getenv("MONGO_URI")
+
+
 app = Flask(__name__)
 CORS(app)  # Allow React to access this API
 
-client = MongoClient('mongodb://localhost:27017/')
-db = client['demo']
+client = MongoClient(MONGO_URI)
+db = client['course_data']
 collection = db['courses']
 
 # Custom serializer for ObjectId
