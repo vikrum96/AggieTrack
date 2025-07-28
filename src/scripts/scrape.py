@@ -13,15 +13,9 @@ for filename in os.listdir("src/pdf"):
             out.write(text)
             out.write(bytes((12,)))  # Form feed (page delimiter)
 
-    # Get year/term from header
-    with open("src/scripts/output.txt", "r", encoding="utf-8") as f:
-        for i, line in enumerate(f):
-            if i == 2:
-                items = line.strip().split()
-                term = items[-2][:3].upper()  # e.g., SPR
-                curr_year = items[-1]         # e.g., 2025
-                yr = f"{curr_year}-{term}"
-                break
+    # Extract year and term from filename (e.g., grdSPR2025.pdf)
+    base = os.path.splitext(filename)[0]
+    yr = f"{base[6:10]}-{base[3:6].upper()}" # (e.g., 2024-FAL)
 
     # Parse all pages 
     with open("src/scripts/output.txt", "r", encoding="utf-8") as f:
