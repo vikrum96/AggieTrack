@@ -3,6 +3,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson import ObjectId
 import json
+import certifi
 
 import os
 from dotenv import load_dotenv
@@ -14,7 +15,11 @@ MONGO_URI = os.getenv("MONGO_URI")
 app = Flask(__name__)
 CORS(app)  # Allow React to access this API
 
-client = MongoClient(MONGO_URI)
+client = MongoClient(
+    MONGO_URI,
+    tls=True,
+    tlsCAFile=certifi.where()
+)
 db = client['course_data']
 collection = db['courses']
 
