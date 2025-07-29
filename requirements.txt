@@ -1,11 +1,8 @@
-pymupdf
 Flask
-
 Flask-PyMongo
 pymongo>=4.0.0
 certifi
-
 Flask-cors
-
 python-dotenv
+pymupdf
 PyPDF2
