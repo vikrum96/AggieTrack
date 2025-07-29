@@ -2,7 +2,8 @@ pymupdf
 Flask
 
 Flask-PyMongo
-pymongo
+pymongo>=4.0.0
+certifi
 
 Flask-cors
 
