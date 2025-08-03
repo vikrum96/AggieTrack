@@ -1,5 +1,3 @@
-import React from "react";
-
 const semesterOrder = { SPR: 1, SUM: 2, FAL: 3 };
 
 function parseYearSemester(yearSem) {
