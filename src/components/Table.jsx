@@ -37,7 +37,7 @@ export default function Table({ searchResults }) {
         </thead>
         <tbody>
           {sortedResults.map((course, courseIdx) => {
-            const [yearOnly, semesterOnly] = course.year?.includes("-")? course.year.split("-") : [course.year, "-"];
+            const [year, semester] = course.year.split("-");
 
             return course.section_num.map((section, secIdx) => {
               const prof = course.instructor[secIdx];
@@ -52,8 +52,8 @@ export default function Table({ searchResults }) {
 
               return (
                 <tr key={`${courseIdx}-${secIdx}`} className="text-center hover:bg-gray-50">
-                  <td className="border border-gray-300 px-2 py-1">{yearOnly}</td>
-                  <td className="border border-gray-300 px-2 py-1">{semesterOnly}</td>
+                  <td className="border border-gray-300 px-2 py-1">{year}</td>
+                  <td className="border border-gray-300 px-2 py-1">{semester}</td>
                   <td className="border border-gray-300 px-2 py-1 max-w-xs break-words">{prof}</td>
                   <td className="border border-gray-300 px-2 py-1">{parseFloat(gpa).toFixed(3)}</td>
                   <td className="border border-gray-300 px-2 py-1">{section}</td>
