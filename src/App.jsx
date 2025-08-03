@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import "./css/App.css";
 import Header from "./components/Header";
 import CourseSearch from "./components/CourseSearch";
-import Graph from "./components/Graph"; // ⬅ Import the new component
+import Graph from "./components/Graph";
+import Table from "./components/Table";
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
@@ -43,6 +44,7 @@ function App() {
       {hasSearched && (
         <div className="flex flex-col min-h-screen bg-white text-gray-800">
           <Graph graphData={graphData} />
+          <Table searchResults={searchResults} />
         </div>
       )}
     </>
