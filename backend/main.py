@@ -24,7 +24,7 @@ db = client['course_data']
 collection = db['courses']
 
 # Custom serializer for ObjectId
-class JSONEncoder(json.JSONEncoder):
+class JSONEncoder(json.JSONEncoder):    
     def default(self, o):
         if isinstance(o, ObjectId):
             return str(o)

@@ -10,7 +10,8 @@ const CourseSearch = ({ setSearchResults, setHasSearched }) => {
     if (number.trim()) param.append('course_num', number.trim());
 
     try {
-      const res = await fetch(`http://localhost:5000/api/grades?${param}`);
+      const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+      const res = await fetch(`${API_BASE}/api/grades?${param}`);
       const data = await res.json();
       setSearchResults(data);
       if (setHasSearched) setHasSearched(true); // Notify parent App

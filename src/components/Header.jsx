@@ -5,7 +5,7 @@ const Header = () => {
     <header className="flex items-center justify-between p-4 font-sans">
       {/* AggieTrack */}
       <div className="pl-10 text-4xl">
-        <h1 className="text-[#500000] font-[750]">Aggie Track</h1>
+        <h1 className="text-[#500000] font-[750]">AggieClass</h1>
       </div>
 
       {/* Favorites and Dark Mode */}
