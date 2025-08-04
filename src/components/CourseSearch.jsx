@@ -10,7 +10,8 @@ const CourseSearch = ({ setSearchResults, setHasSearched }) => {
     if (number.trim()) param.append('course_num', number.trim());
 
     try {
-      const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+      const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      console.log("Fetching from:", `${API_BASE}/api/grades?${param}`);
       const res = await fetch(`${API_BASE}/api/grades?${param}`);
       const data = await res.json();
       setSearchResults(data);
